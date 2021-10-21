@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="addCus">
+        <h1>修改跟踪表</h1>
+        <hr>
+        <input type="hidden" id="hidden" value="">
+        <label>客户姓名：</label><span id="name"></span><br><br>
+        <label style="width: 320px;margin-left: -10px;">跟踪记录：</label>
+        <br>
+        <textarea id="record"></textarea><br><br>
+        <label>跟踪意向：</label>
+        <select name="intention" id="intention">
+            <option value="0">请选择跟踪意向</option>
+            <option value="初步沟通">初步沟通</option>
+            <option value="考虑中">考虑中</option>
+            <option value="有意向">有意向</option>
+            <option value="有明确意向">有明确意向</option>
+            <option value="已签订合同">已签订合同</option>
+            <option value="已拒绝">已拒绝</option>
+        </select><br><br>
+        <input type="button" value="确认修改" id="addBtn">
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        //回填数据
+        $(function () {
+            //获取数据
+            //#解析URL获取t_id
+            var url = location.href;
+            var t_id = url.substring(url.lastIndexOf("=") + 1);
+            // alert(t_id)
+            var token = localStorage.getItem("token");
+
+            //获取要回填的数据
+            $.ajax({
+                headers:{
+                    token:token
+                },
+                url:"http://localhost:8080/hscrm/user/TrackServlet",
+                type:"get",
+                async:false,
+                data:{
+                    action:"find",
+                    t_id:t_id,
+                },
+                success:function(respText){
+                    var track = respText.data;
+                    //获取c_id
+                    $("#hidden").val(track.customer.c_id);
+                    //回填数据
+                    $("#name").html(track.customer.c_name);
+                    $("#record").val(track.record);
+                    //下拉列表回填
+                    var intentionList = $("#intention option");
+                    for(var option of intentionList){
+                        if(option.value == track.intention){
+                            option.selected = true;
+                        }else{
+                            option.selected = false;
+                        }
+                    }
+
+                }
+            })
+
+            //修改
+            $("#addBtn").click(function () {
+                //获取填写的数据
+                var c_id = $("#hidden").val();
+                var record = $("#record").val();
+                var intention = $("select[id='intention']").val();
+                //e_id::这里不需要获取e_id:通过后台获取
+                //添加Track需要字段e_id：
+                //我通过在后端TrackServlet通过token获取username，再通过username获取当前用户编号e_id
+
+                //数据校验
+                if (intention == 0) {
+                    alert("您还没有选择跟踪意向");
+                    return;
+                }
+                
+                //请求
+                $.ajax({
+                    headers: {
+                        token: token
+                    },
+                    url: "http://localhost:8080/hscrm/user/TrackServlet",
+                    type: "post",
+                    data: {
+                        action: "update",
+                        t_id:t_id,
+                        c_id: c_id,
+                        record: record,
+                        intention: intention,
+                    },
+                    success: function (respText) {
+                        if (respText.code == 1000) {
+                            alert("修改成功！");
+                            location.href = "track.html";
+                        } else {
+                            alert("修改失败！");
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+    <!-- =================================================================================== -->
+    <style>
+        body {
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            background-color: #281f1d;
+        }
+
+        #name {
+            color: red;
+            text-align: left;
+            display: inline-block;
+            width: 220px;
+            height: 30px;
+            margin-left: -10px;
+        }
+
+        label {
+            display: inline-block;
+            text-align: left;
+            width: 120px;
+        }
+
+        textarea {
+            width: 320px;
+            height: 50px;
+        }
+
+        select {
+            width: 200px;
+        }
+
+        .addCus {
+            width: 620px;
+            border-radius: 30px;
+            margin: 0 auto;
+            margin-top: 50px;
+            text-align: center;
+            padding: 30px;
+            background-color: whitesmoke;
+            box-shadow: 10px 10px 10px #594c6d;
+            opacity: 0.9;
+        }
+
+        #addBtn {
+            width: 200px;
+            height: 30px;
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            margin-left: 128px;
+        }
+    </style>
+</body>
+
+</html>

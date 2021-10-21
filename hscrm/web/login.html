@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <script src="js/jquery-3.6.0.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            color: darkblue;
+            font-size: 18px;
+        }
+        a {
+            text-decoration: none;
+            color: orangered;
+            font-weight: bolder;
+            font-size: 14px;
+        }
+        .login {
+            width: 500px;
+            border-radius: 30px;
+            margin: 0 auto;
+            margin-top: 150px;
+            text-align: center;
+            padding: 30px;
+            background-color: whitesmoke;
+            box-shadow: 10px 10px 10px slategray;
+        }
+        .login label {
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+            text-align: end;
+        }
+        b {
+            display: inline-block;
+            width: 1em;
+        }
+        input {
+            height: 32px;
+            width: 280px;
+            font-size: 14px;
+            margin: 10px 0;
+            outline: none;
+            border-radius: 20px;
+            padding:  0 10px;
+        }
+        input:checked {
+            border-radius: 20px;
+        }
+        h1 {
+            font-size: 23px;
+            margin: 0;
+        }
+        button {
+            width: 100px;
+            height: 32px;
+            line-height: 32px;
+            border-radius: 15px;
+            font-size: 21px;
+            color: orangered;
+            margin-left: 34px;
+        }
+        .btn {
+            margin-top: 20px;
+        }
+        .btn span {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login">
+        <h1>华杉CRM系统</h1>
+        <br>
+        <form id="form1" name="form1">
+            <label>用户名：</label><input type="text" name="userName" id="userName"><br>
+            <label>密<b></b>码：</label><input type="password" name="passwd" id="passwd" ><br>
+            <div class="btn">
+                <!-- <button id="loginButton">登<b></b>录</button> -->
+                <input type="button" id="loginButton" value="登录">
+                <b></b>
+                <span>没有账号，<a href="registered.html">点我注册</a></span>
+            </div>
+        </form>
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        $("#loginButton").click(function () {
+            // var dateLogin = $('#form1').serialize();
+            var userName = $("#userName").val();
+            var passwd = $("#passwd").val();
+            $.ajax({
+                url: "http://localhost:8080/hscrm/login",
+                type: "post",
+                data: {userName:userName,passwd:passwd},
+                success: function (text) {
+                    // alert(1);
+                    if (text.data == 2) {
+                        alert("登陆成功，我要跳转啦");
+                        alert(text.data);
+                        window.location.href = "index.html";
+                    }
+                    if(text.data == 1){
+                        // alert(data.code);
+                        alert("密码错误");
+                    }
+                    if(text.data == 0){
+                        // alert(data.code);
+                        alert("用户名不存在");
+                    }
+                }
+            });
+            // return false;
+        });
+    </script>
+</body>
+</html>

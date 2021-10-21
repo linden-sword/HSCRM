@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <script src="js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="registered">
+        <h1>HSCRM系统</h1>
+        <hr>
+        <h2>用户注册</h2><br>
+        <form id="form2">
+            <label>用<c></c>户<c></c>名：</label><input type="text" name="userName" id="userName"><span>*</span><br>
+            <label>密<b></b><b></b>码：</label><input type="password" name="passwd" id="passwd"><span>*</span><br>
+            <label>确认密码：</label><input type="password" name="passwd2" id="passwd2"><span>*</span><br>
+            <!-- <label>验<c></c>证<c></c>码：</label><input type="text" name="verifyCode" id="verifyCode"><span>*</span>
+                <a href="" id="VCFlash">
+                    <div class="verifyCode"><img id="img" src="http://localhost:8080/hscrm/VerifyCode"/></div>
+                </a> -->
+            <label>姓<b></b><b></b>名：</label><input type="text" name="name" id="name"><span>*</span><br>
+            <label>性<b></b><b></b>别：</label>
+            <input type="radio" class="sex" name="sex" value="男" checked=checked>男
+            <input type="radio" class="sex" name="sex" value="女">女<br>
+            <label>电<b></b><b></b>话：</label><input type="text" name="tel" id="tel"><br>
+            <!-- <button id="registeredButton">注&nbsp;册</button> -->
+            <input type="button" id="registeredButton" value="注册">
+        </form>
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        //验证码刷新
+        // $("#VCFlash").click(function (event) {
+        //     event.preventDefault();
+        //     //生成一个随机数（防止缓存）
+        //     var num=Math.ceil(Math.random()*10);//ceil:向上取整
+        //     //$$("#img")获取到的是jquery对象，他没有dom对象的方法，比如src，因此需要把对象转化为dom，然后$("#img")[0].src获取值  
+		// 	var src = $("#img")[0].src; 
+		// 	//alert(src + "?num=" + num);
+        //     //attr是jquery对象的方法
+		// 	$("#img").attr('src',src+ "?num=" + num); //加上随机数，虽然后端用不到这个参数，但是也不影响。
+        //     //==如果url一样的话，浏览器会有原来的缓存，认为是同一个url不进行再次访问，也就不会刷新验证码。
+        //     //==生成一个随机数作为参数的作用是让每一次的url都不一样，防止缓存，达到点击一次刷新一次验证码的效果。
+        // })
+
+        //注册
+        $("#registeredButton").click(function () {
+            // var token = localStorage.getItem("token");
+
+            var username = $("#userName").val();
+            //数据校验##用户名不能为空
+            // alert(username)//经测试：用户名为空是长度为0的字符串
+            if(username == ""){
+                alert("用户名不能为空");
+                return;
+            }
+            var passwd = $("#passwd").val();
+            var passwd2 = $("#passwd2").val();
+            //数据校验##密码不能为空
+            if(passwd == "" || passwd2 == ""){
+                alert("密码不能为空");
+                return;
+            }
+            //数据校验##校验两次输入密码是否一致
+            if (passwd != passwd2) {
+                alert("两次密码输入不一致，请确认后重试！");
+                return;
+            }
+            // var verifyCode = $("#verifyCode").val();
+            // //数据校验##验证码不能为空
+            // if(verifyCode == ""){
+            //     alert("验证码不能为空");
+            //     return;
+            // }
+            var e_name = $("#name").val();
+            //数据校验##姓名不能为空
+            if(e_name == ""){
+                alert("姓名不能为空");
+                return;
+            }
+            var e_sex;
+            if ($(".sex").get(0).checked) {
+                e_sex = "男";
+            } else {
+                e_sex = "女";
+            }
+            var e_tel = $("#tel").val();
+            //数据校验##手机号格式不正确
+            var reg = /^1[345678]\d{9}$/;
+            if (!reg.test($("#tel").val())){
+                alert("请输入正确的手机号！\n11位数字且以13、14、15、16、17、18开头");
+                return;
+            }
+
+            //注册请求
+            $.ajax({
+                // headers:{
+                //     token:token
+                // },
+                url: "http://localhost:8080/mvc/reg",
+                type: "post",
+                data: { e_name: e_name, e_sex: e_sex, e_tel: e_tel, username: username, passwd: passwd },
+                success: function (respText) {
+                    if (respText.code == 1000) {
+                        alert("注册成功");
+                        location.href="login.html";
+                    } else {
+                        alert(respText.code+":"+respText.message);
+                    }
+                }
+            });
+        });
+
+        //用户名失去焦点，判断用户名是否重复
+        // $("#userName").blur(function () {
+        //     var token = localStorage.getItem("token");
+        //     var username = $("#userName").val();
+        //     //数据校验
+
+        //     //发送请求
+        //     $.ajax({
+        //         headers:{
+        //             token:token
+        //         },
+        //         url: "http://localhost:8080/hscrm/userNameUnique",
+        //         type: "get",
+        //         data: { username: username },
+        //         success: function (respText) {
+        //             if (respText.data == 1) {
+        //                 alert("用户名重复");
+        //             }
+        //         }
+        //     });
+        // });
+    </script>
+    <!-- =================================================================================== -->
+    <style>
+        * {
+            text-align: center;
+            color: darkblue;
+            font-family: 仿宋;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #cde6c7;
+            background-image: url(images/36886167a6257089b3731c6480c5a9f6.jpeg);
+        }
+
+        .registered {
+            width: 620px;
+            border-radius: 30px;
+            margin: 0 auto;
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px 30px;
+            background-color: whitesmoke;
+            box-shadow: 10px 10px 10px #594c6d;
+            opacity: 0.9;
+        }
+
+        form {
+            width: 620px;
+            margin: 0 auto;
+            font-size: 21px;
+            font-weight: bolder;
+            text-align: left;
+        }
+
+        label {
+            display: inline-block;
+            width: 120px;
+            height: 32px;
+            margin-left: 100px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        b {
+            display: inline-block;
+            width: 1em;
+        }
+
+        c {
+            display: inline-block;
+            width: 0.5em;
+        }
+
+        input {
+            height: 32px;
+            width: 280px;
+            font-size: 14px;
+            margin: 10px 0;
+            outline: none;
+            border-radius: 20px;
+            padding: 0 10px;
+        }
+        #verifyCode {
+            font-size: 14px;
+            margin: 10px 0;
+            outline: none;
+            border-radius: 20px;
+            padding: 0 10px;
+            height: 32px;
+            width: 120px;
+        }
+        .verifyCode {
+            display: inline-block;
+            height: 32px;
+            width: 120px;
+        }
+        .verifyCode img{
+            height: 100%;
+            width: 100%;
+        }
+        .sex {
+            width: 21px;
+            height: 21px;
+        }
+
+        input:checked {
+            border-radius: 20px;
+        }
+
+        span {
+            display: inline-block;
+            width: 30px;
+            height: 21px;
+            line-height: 21px;
+            text-align: center;
+            color: red;
+        }
+
+        #registeredButton {
+            display: inline-block;
+            width: 100px;
+            margin-left: 220px;
+            font-size: 21px;
+            font-weight: bolder;
+            color: orangered;
+        }
+    </style>
+</body>
+
+</html>

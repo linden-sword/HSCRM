@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="addCus">
+        <h1>添加客户</h1>
+        <hr>
+        <label>姓名：</label><input type="text" name="c_name" id="c_name"><br><br>
+        <label>性别：</label>
+        <div class="sex">
+            <input type="radio" name="c_sex" id="c_sex" value="男" checked>男
+            <input type="radio" name="c_sex" id="c_sex" value="女">女
+        </div>
+        <br><br>
+        <label>电话：</label><input type="text" name="c_tel" id="c_tel"><br><br>
+        <label>工作：</label><input type="text" name="c_job" id="c_job"><br><br>
+        <label>公司：</label><input type="text" name="c_company" id="c_company"><br><br>
+        <input type="button" value="添加" id="addBtn">
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        $("#addBtn").click(function () {
+            //获取数据
+            var c_name = $("#c_name").val();
+            var c_sex = $("input[name='c_sex']:checked").val();
+            var c_tel = $("#c_tel").val();
+            var c_job = $("#c_job").val();
+            var c_company = $("#c_company").val();//憨批玩意，又漏了一个括号，浪费半小时！！！
+            
+            //数据校验
+            
+            //请求
+            var token = localStorage.getItem("token");
+            $.ajax({
+                headers: {
+                    token: token
+                },
+                url:"http://localhost:8080/mvc/cus",
+                type: "post",
+                data: {
+                    c_name: c_name,
+                    c_sex: c_sex,
+                    c_tel: c_tel,
+                    c_job: c_job,
+                    c_company: c_company,
+                },
+                success: function (respText) {
+                    if (respText.code == 1000) {
+                        alert("添加成功！");
+                        location.href = "customer.html";
+                    } else {
+                        alert("添加失败！");
+                    }
+                }
+            })
+        })
+    </script>
+    <!-- =================================================================================== -->
+    <style>
+        body {
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            background-color: #281f1d;
+        }
+
+        label {
+            display: inline-block;
+            text-align: left;
+            width: 80px;
+        }
+
+        input {
+            width: 200px;
+        }
+
+        .sex {
+            display: inline-block;
+            text-align: left;
+            width: 200px;
+        }
+
+        .sex input {
+            width: 13px;
+            height: 13px;
+        }
+
+        .addCus {
+            width: 620px;
+            border-radius: 30px;
+            margin: 0 auto;
+            margin-top: 50px;
+            text-align: center;
+            padding: 30px;
+            background-color: whitesmoke;
+            box-shadow: 10px 10px 10px #594c6d;
+            opacity: 0.9;
+        }
+
+        #addBtn {
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            margin-left: 32px;
+            margin-left: 74px;
+        }
+    </style>
+</body>
+
+</html>

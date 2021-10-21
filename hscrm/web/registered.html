@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <script src="js/jquery-3.6.0.js"></script>
+    <style>
+        * {
+            text-align: center;
+            color: darkblue;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        h3 {
+            margin: 0;
+        }
+
+        form {
+            font-size: 21px;
+            font-weight: bolder;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>华杉CRM系统</h1>
+    <hr>
+    <h3>-------------用户注册-------------</h3><br>
+    <form id="form2">
+        <label>姓&nbsp;&nbsp;&nbsp;名：<input type="text" name="name" id="name"></label><span>*</span><br><br>
+        <label>性&nbsp;&nbsp;&nbsp;别：
+            <input type="radio" class="sex" name="sex" value="男" checked=checked>男&nbsp;&nbsp;&nbsp;
+            <input type="radio" class="sex" name="sex" value="女">女&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </label><br><br>
+        <label>电&nbsp;&nbsp;&nbsp;话：<input type="text" name="tel" id="tel"></label><br><br>
+        <label>用户名：<input type="text" name="userName" id="userName"></label><span>*</span><br><br>
+        <label>密&nbsp;&nbsp;&nbsp;码：<input type="password" name="passwd" id="passwd"></label><span>*</span><br><br>
+        <label>确认密码：<input type="password" name="passwd2" id="passwd2"></label><span>*</span><br><br>
+        <!-- <button id="registeredButton">注&nbsp;册</button> -->
+        <input type="button" id="registeredButton" value="注册">
+    </form>
+    <!-- =================================================================================== -->
+    <script>
+        $("#registeredButton").click(function () {
+            var e_name = $("#name").val();
+            var e_sex;
+            if($(".sex").get(0).checked){
+                e_sex = "男";
+            }else{
+                e_sex = "女";
+            }
+            var e_tel = $("#tel").val();
+            var username = $("#userName").val();
+            var passwd = $("#passwd").val();
+            var passwd2 = $("#passwd2").val();
+            //校验两次输入密码是否一致
+            if(passwd != passwd2){
+                alert("两次密码输入不一致，请确认后重试！");
+                return;
+            }
+            $.ajax({
+                url: "http://localhost:8080/hscrm/reg",
+                type: "post",
+                data: {e_name:e_name,e_sex:e_sex,e_tel:e_tel,username:username,passwd:passwd},
+                success: function (respText) {
+                    if(respText.code == 1000){
+                        alert("注册成功");
+                    }else{
+                        alert("注册失败");
+                    }
+                }
+            });
+            // return false;
+        });
+
+        //用户名失去焦点，判断用户名是否重复
+        $("#userName").blur(function(){
+            var username = $("#userName").val();
+            //数据校验
+
+            //发送请求
+            $.ajax({
+                url:"http://localhost:8080/hscrm/userNameUnique",
+                type:"get",
+                data:{username:username},
+                success:function(respText){
+                    if(respText.data == 1){
+                        alert("用户名重复");
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

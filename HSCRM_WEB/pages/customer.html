@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="customer">
+        <h1>客户信息管理</h1>
+        <hr>
+        <form>
+            <a href="addCustomer.html" style="font-size: 20px; color: white;">·添加客户</a>
+            <br><br>
+            <!-- <label>·通过客户编号查找客户信息：<input type="text" name="id"><input type="submit" value="查找"></label> -->
+        </form>
+        <hr>
+        <table>
+            <tr class="th">
+                <td>客户编号</td>
+                <td>姓名</td>
+                <td>性别</td>
+                <td>电话</td>
+                <td>职位</td>
+                <td>公司</td>
+                <td>操作</td>
+            </tr>
+        </table>
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        
+        $(function(){
+            var token = localStorage.getItem("token");
+            // alert(1);
+            $.ajax({
+                headers:{
+                    token:token
+                },
+                url:"http://localhost:8080/mvc/cus",
+                type:"get",
+                data:{},
+                success:function(respText){
+                    var customerList = respText.data;
+                    for(var customer of customerList){
+                        var d1 = $("<td>"+customer.c_id+"</td>");
+                        var d2 = $("<td>"+customer.c_name+"</td>");
+                        var d3 = $("<td>"+customer.c_sex+"</td>");
+                        var d4 = $("<td>"+customer.c_tel+"</td>");
+                        var d5 = $("<td>"+customer.c_job+"</td>");
+                        var d6 = $("<td>"+customer.c_company+"</td>");
+                        var d7 = $("<td><a href='' class='update'>修改</a>|<a href='' class='delete'>删除</a></td>");
+                        var r1 = $("<tr></tr>");
+
+                        $("table").append(r1);
+                        r1.append(d1);
+                        r1.append(d2);
+                        r1.append(d3);
+                        r1.append(d4);
+                        r1.append(d5);
+                        r1.append(d6);
+                        r1.append(d7);
+                    }
+                }
+            })
+        })
+        //删除
+        // $(".delete").click(function(event){ 
+            //发现jquery无法使用append内的id和class获取元素。
+        $("body").on("click",".delete",function(event){
+                //取消a标签的默认事件
+                event.preventDefault();
+                var flag = window.confirm("删除这条数据,客户对应的跟踪表也会被删除\n你确定要删除这条数据吗？");
+                if(!flag){
+                    //不删除
+                    return;
+                }
+                //删除
+                //获取客户编号c_id
+                var td1 = $(this).parent().prevAll().last();
+                var c_id = td1.html();
+
+                var token = localStorage.getItem("token");
+                $.ajax({
+                    headers:{
+                        token:token
+                    },
+                    url:"http://localhost:8080/mvc/cus",
+                    type:"post",
+                    data:{
+                        c_id:c_id,
+                        _method:"delete"
+                    },
+                    success:function(respText){
+                        if(respText.code == 1000){
+                            alert("删除成功");
+                            //从页面中移除这一行
+                            var tr = td1.parent();
+                            tr.remove();
+                        }else{
+                            alert("删除失败");
+                        }
+                    }
+                })
+            })
+        //updateCustomer.html传参数c_id
+        //发现jquery无法使用append内的id和class获取元素。
+        $("body").on("click",".update",function(event){
+            //取消默认行为
+            event.preventDefault();
+            var td1 = $(this).parent().prevAll().last();
+            var c_id = td1.html();
+            location.href="updateCustomer.html?c_id="+c_id;
+        })
+    </script>
+    <!-- =================================================================================== -->
+    <style>
+        body {
+            color: whitesmoke;
+            font-family: 仿宋;
+            background-color: #281f1d;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+        a:hover {
+            color: yellow;
+        }
+        form {
+            font-size: 21px;
+            font-weight: bolder;
+        }
+
+        table {
+            width: 100%;
+            text-align: center;
+            border-left: darkslategrey solid 2px;
+            border-top: darkslategrey solid 2px;
+            background: #2e3a1f;
+            border-collapse: collapse;
+        }
+
+        table .th {
+            background: #726930;
+            border: solid 2px seagreen;
+            font-weight: bolder;
+        }
+
+        table td {
+            border-right: darkslategrey solid 2px;
+            border-bottom: darkslategrey solid 2px;
+            padding: 10px 10px 6px;
+            vertical-align: top;
+        }
+
+        .button01 {
+            font-size: 20px;
+        }
+    </style>
+</body>
+
+</html>

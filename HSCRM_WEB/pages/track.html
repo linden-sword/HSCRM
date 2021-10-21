@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="customer">
+        <h1>跟踪表信息管理</h1>
+        <hr>
+        <form>
+            <a href="addTrack.html" style="font-size: 20px; color: white;">·添加跟踪表</a>
+            <br><br>
+            <!-- <label>·通过跟踪表编号查找跟踪表信息：<input type="text" name="t_id"><input type="submit" value="查找"></label> -->
+        </form>
+        <hr>
+        <table>
+            <tr class="th">
+                <td>跟踪表编号</td>
+                <td>客户姓名</td>
+                <td>员工姓名</td>
+                <td>跟踪记录</td>
+                <td>意向描述</td>
+                <td>操作</td>
+            </tr>
+            
+        </table>
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        
+        $(function(){
+            ///又犯傻，注意两个表之间的关联，
+            //我的track对象里面的customer属性和emp属性是通过findById找到的
+            //注意手动添加的c_id和e_id是否在另外两个表中存在
+            var token = localStorage.getItem("token");
+            // alert(1);
+            $.ajax({
+                headers:{
+                    token:token
+                },
+                url:"http://localhost:8080/hscrm/user/TrackServlet",
+                type:"get",
+                data:{action:"findAll"},
+                success:function(respText){
+                    var trackList = respText.data;
+                    for(var track of trackList){
+                        var d1 = $("<td>"+track.t_id+"</td>");
+                        var d2 = $("<td>"+track.customer.c_name+"</td>");
+                        var d3 = $("<td>"+track.emp.e_name+"</td>");
+                        var d4 = $("<td>"+track.record+"</td>");
+                        var d5 = $("<td>"+track.intention+"</td>");
+                        var d7 = $("<td><a href='' class='update'>修改</a>|<a href='' class='delete'>删除</a></td>");
+                        var r1 = $("<tr></tr>");
+
+                        $("table").append(r1);
+                        r1.append(d1);
+                        r1.append(d2);
+                        r1.append(d3);
+                        r1.append(d4);
+                        r1.append(d5);
+                        r1.append(d7);
+                    }
+                }
+            })
+        })
+        //删除
+        // $(".delete").click(function(event){ 
+            //发现jquery无法使用append内的id和class获取元素。
+        $("body").on("click",".delete",function(event){
+                //取消a标签的默认事件
+                event.preventDefault();
+                var flag = window.confirm("你确定要删除这条数据吗？");
+                if(!flag){
+                    //不删除
+                    return;
+                }
+                //删除
+                //获取客户编号c_id
+                var td1 = $(this).parent().prevAll().last();
+                var t_id = td1.html();
+
+                var token = localStorage.getItem("token");
+                $.ajax({
+                    headers:{
+                        token:token
+                    },
+                    url:"http://localhost:8080/hscrm/user/TrackServlet",
+                    type:"get",
+                    data:{
+                        action:"delete",
+                        t_id:t_id,
+                    },
+                    success:function(respText){
+                        if(respText.code == 1000){
+                            alert("删除成功");
+                            //从页面中移除这一行
+                            var tr = td1.parent();
+                            tr.remove();
+                        }else{
+                            alert("删除失败");
+                        }
+                    }
+                })
+            })
+        //updateCustomer.html传参数t_id
+        //发现jquery无法使用append内的id和class获取元素。
+        $("body").on("click",".update",function(event){
+            //取消默认行为
+            event.preventDefault();
+            var td1 = $(this).parent().prevAll().last();
+            var t_id = td1.html();
+            location.href="updateTrack.html?t_id="+t_id;
+        })
+    </script>
+    <!-- =================================================================================== -->
+    <style>
+        body {
+            color: whitesmoke;
+            font-family: 仿宋;
+            background-color: #281f1d;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+        a:hover {
+            color: yellow;
+        }
+
+        form {
+            font-size: 21px;
+            font-weight: bolder;
+        }
+
+        table {
+            width: 100%;
+            text-align: center;
+            border-left: darkslategrey solid 2px;
+            border-top: darkslategrey solid 2px;
+            background: #2e3a1f;
+            border-collapse: collapse;
+        }
+
+        table .th {
+            background: #726930;
+            border: solid 2px seagreen;
+            font-weight: bolder;
+        }
+
+        table td {
+            border-right: darkslategrey solid 2px;
+            border-bottom: darkslategrey solid 2px;
+            padding: 10px 10px 6px;
+            vertical-align: top;
+        }
+
+        .button01 {
+            font-size: 20px;
+        }
+    </style>
+</body>
+</html>

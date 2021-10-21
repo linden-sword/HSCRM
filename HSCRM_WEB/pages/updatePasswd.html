@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="updatePasswd">
+        <h1>修改密码</h1>
+        <hr>
+        <form>
+            <label>输入原密码：<input type="password" id="oldPasswd"></label><br><br>
+            <label>输入新密码：<input type="password" id="newPasswd"></label><br><br>
+            <label>确认新密码：<input type="password" id="newPasswd2"></label><br><br>
+            <input type="button" value="确认修改" id="loginOutButton">
+        </form>
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        $("#loginOutButton").click(function(){
+            //获取
+            var oldPasswd = $("#oldPasswd").val();
+            var newPasswd = $("#newPasswd").val();
+            var newPasswd2 = $("#newPasswd2").val();
+            //校验
+            if(newPasswd != newPasswd2){
+                alert("两次密码输入不一致，请重新输入！");
+                return;
+            };
+            //发送请求
+            var token = localStorage.getItem("token");
+            $.ajax({
+                headers:{
+                    token:token
+                },
+                url:"http://localhost:8080/hscrm/user/updatePasswd",
+                type:"post",
+                data:{oldpasswd:oldPasswd,newpasswd:newPasswd},
+                success:function(respText,status,xhr){
+                    var token = xhr.getResponseHeader("token");
+                    localStorage.setItem("token",token);
+
+                    if(respText.code == 1005){
+                        alert(respText.data);
+                        return;
+                    }
+                    if(respText.code == 1000){
+                        alert("修改成功!");
+                        loginOut();
+                    }
+                }
+            })
+        })
+        //退出登录函数
+        function loginOut(){
+            alert("即将退出登录");
+            var token = localStorage.getItem("token");
+            $.ajax({
+              headers:{
+                token:token
+              },
+              url:"http://localhost:8080/hscrm/user/loginOut",
+              type:"get",
+              success:function(respText){
+                if(respText.code == 1000){
+                //当前在ifream里面，需要获取到父窗口再跳转到登录页面
+                  window.parent.location.href="../login.html";
+                  //把客户端的token也清除掉，也可以不写，带个过期的token也不影响
+                  localStorage.removeItem("token");
+                }
+              }
+            })
+        }
+    </script>
+    <!-- =================================================================================== -->
+    <style>
+        body {
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            background-color: #281f1d;
+        }
+        .updatePasswd {
+            width: 620px;
+            border-radius: 30px;
+            margin: 0 auto;
+            margin-top: 50px;
+            text-align: center;
+            padding: 30px;
+            background-color: whitesmoke;
+            box-shadow: 10px 10px 10px #594c6d;
+            opacity: 0.9;
+        }
+        #loginOutButton {
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            margin-left: 32px;
+        }
+    </style>
+</body>
+
+</html>

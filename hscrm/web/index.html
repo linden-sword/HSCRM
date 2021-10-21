@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <style>
+        a {
+          text-decoration: none;
+        }
+        * {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          background-color: slategrey;
+        }
+        header {
+          width: 100%;
+          height: 60px;
+          background-color: darkcyan;
+          margin: 0 auto;
+        }
+        .head {
+          width: 1200px;
+          margin:  0 auto;
+        }
+        .one {
+          width: 1200px;
+          height: 600px;
+          margin: 0 auto;
+        }
+        .left {
+          width: 200px;
+          height: 600px;
+          background-color: silver;
+          float: left;
+  
+        }
+        .right {
+          width: 1000px;
+          height: 600px;
+          background-color: #fff;
+          float: left;
+        }
+        iframe {
+          width: 1000px;
+          height: 600px;
+          background-color: gainsboro;
+          border: 0;
+        }
+        p a {
+            font-size: 21px;
+            color: black;
+        }
+        .hd {
+            margin-top: 0;
+            font-size: 21px;
+            font-weight: bolder;
+            color: brown;
+            line-height: 60px;
+            display: inline-block;
+        }
+        .l {
+          font-size: 30px;
+        }
+        .r {
+          float: right;
+        }
+      </style>
+</head>
+<body>
+    <header>
+        <div class="head">
+          <p class="hd l">华杉CRM系统</p>
+          <p class="hd r">您好，！ <a href="">[退出登录]</a></p>
+        </div>
+      </header>
+      <div class="one">
+        <div class="left">
+          <p><a href="" target="iframe_a">客户信息管理</a></p>
+          <p><a href="" target="iframe_a">跟踪信息管理</a></p>
+          <p><a href="" target="iframe_a">修改密码</a></p>
+        </div>
+        <div class="right">
+          <iframe src="welcom.html" name="iframe_a" scrolling="no";></iframe>
+        </div>
+      </div>
+</body>
+</html>

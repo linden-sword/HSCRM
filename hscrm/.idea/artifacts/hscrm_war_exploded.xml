@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="hscrm:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/hscrm_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="hscrm/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="hscrm" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

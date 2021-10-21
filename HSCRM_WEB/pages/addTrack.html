@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jquery-3.6.0.js"></script>
+</head>
+
+<body>
+    <div class="addCus">
+        <h1>添加跟踪表</h1>
+        <hr>
+        <label>客户姓名：</label>
+            <select id="name">
+                <option value="0">请选择客户姓名</option>
+            </select>
+        <br><br>
+        <label style="width: 320px;margin-left: -10px;">跟踪记录：</label>
+        <br>
+        <textarea id="record"></textarea><br><br>
+        <label>跟踪意向：</label>
+            <select name="intention" id="intention">
+                <option value="0">请选择跟踪意向</option>
+                <option value="初步沟通">初步沟通</option>
+                <option value="考虑中">考虑中</option>
+                <option value="有意向">有意向</option>
+                <option value="有明确意向">有明确意向</option>
+                <option value="已签订合同">已签订合同</option>
+                <option value="已拒绝">已拒绝</option>
+            </select><br><br>
+        <input type="button" value="添加" id="addBtn">
+    </div>
+    <!-- =================================================================================== -->
+    <script>
+        var token = localStorage.getItem("token");
+        //初始化客户信息，用来显示下拉列表
+        $.ajax({
+            headers:{
+                token:token
+            },
+            url:"http://localhost:8080/hscrm/user/CustomerServlet",
+            type:"get",
+            data:{
+                action:"findAll"
+            },
+            success:function(respText){
+                var customerList = respText.data;
+                for(var customer of customerList){
+                    var option = $("<option value = '"+customer.c_id+"'>"+customer.c_name+"</option>");
+                    $("#name").append(option);
+                }
+            }
+        })
+
+
+
+
+        $("#addBtn").click(function () {
+            //获取填写的数据
+            var c_id = $("select[id='name']").val();
+            var record = $("#record").val();
+            var intention = $("select[id='intention']").val();
+            //获取e_id
+            //添加Track需要字段e_id：这里不需要获取e_id:
+            //我通过在后端TrackServlet通过token获取username，再通过username获取当前用户编号e_id
+
+            //数据校验
+            if(c_id == 0){
+                alert("您还没有选择客户");
+                return;
+            }
+            if(intention == 0){
+                alert("您还没有选择跟踪意向");
+                return;
+            }
+            
+
+            //请求
+            var token = localStorage.getItem("token");
+            $.ajax({
+                headers: {
+                    token: token
+                },
+                url:"http://localhost:8080/hscrm/user/TrackServlet",
+                type: "post",
+                data: {
+                    action: "add",
+                    c_id:c_id,
+                    record:record,
+                    intention:intention,
+                },
+                success: function (respText) {
+                    if (respText.code == 1000) {
+                        alert("添加成功！");
+                        location.href = "track.html";
+                    } else {
+                        alert("添加失败！");
+                    }
+                }
+            })
+        })
+    </script>
+    <!-- =================================================================================== -->
+    <style>
+        body {
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            background-color: #281f1d;
+        }
+
+        label {
+            display: inline-block;
+            text-align: left;
+            width: 120px;
+        }
+        textarea {
+            width: 320px;
+            height: 50px;
+        }
+        select {
+            width: 200px;
+        }
+        .addCus {
+            width: 620px;
+            border-radius: 30px;
+            margin: 0 auto;
+            margin-top: 50px;
+            text-align: center;
+            padding: 30px;
+            background-color: whitesmoke;
+            box-shadow: 10px 10px 10px #594c6d;
+            opacity: 0.9;
+        }
+
+        #addBtn {
+            width: 200px;
+            height: 30px;
+            font-weight: bolder;
+            font-size: 18px;
+            font-family: 仿宋;
+            margin-left: 128px;
+        }
+    </style>
+</body>
+
+</html>
